@@ -1,0 +1,36 @@
+# Entornos y secretos
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Modelos descargados y audio generado (nunca al repositorio)
+models/
+*.bin
+muestras_generadas/
+*.wav
+*.ogg
+*.webm
+!tests/datos/audio/**/*.wav
+
+# Resultados locales de mediciones (los definitivos se copian a docs/)
+mediciones_locales/
+
+# IDE y sistema
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
