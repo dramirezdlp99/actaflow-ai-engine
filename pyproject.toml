@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "actaflow-engine"
+version = "0.1.0"
+description = "ActaFlow - motor de voz a texto y extraccion de entidades juridicas"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Uso academico" }
+dependencies = [
+    "fastapi>=0.142,<1",
+    "uvicorn[standard]>=0.54,<1",
+    "pydantic-settings>=2.15,<3",
+    "faster-whisper==1.2.1",
+    "psutil>=7.2,<8",
+    "spacy>=3.8,<3.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1,<10",
+    "httpx2>=2.13,<3",
+    "ruff>=0.16,<0.17",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"actaflow_engine.diagnostico" = ["muestras/*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "S"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+"scripts/**" = ["S310"]
+"src/actaflow_engine/diagnostico/benchmark.py" = ["S603"]
