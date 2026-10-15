@@ -24,7 +24,9 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    hmac_secret: SecretStr = Field(..., description="Secreto HMAC compartido con el backend")
+    hmac_secret: SecretStr = Field(
+        ..., description="Secreto HMAC compartido con legal-case-service"
+    )
     hmac_tolerance_seconds: int = Field(300, ge=30, le=900)
     environment: Entorno = Entorno.LOCAL
     asr_model: str = "tiny"
@@ -32,6 +34,9 @@ class Settings(BaseSettings):
     benchmark_audio: Path = Path("./muestras_generadas/muestra_es.wav")
     benchmark_timeout_seconds: int = Field(600, ge=10, le=3600)
     max_body_bytes: int = Field(5 * 1024 * 1024, ge=1024, le=20 * 1024 * 1024)
+    # Servidor gRPC nativo (HTTP/2). En Render solo es alcanzable desde el mismo contenedor:
+    # la pasarela gRPC-Web del puerto web le reenvia las llamadas.
+    grpc_bind: str = Field("127.0.0.1:8102", pattern=r"^[0-9a-zA-Z.\[\]:]+:[0-9]{1,5}$")
 
     @field_validator("hmac_secret")
     @classmethod
