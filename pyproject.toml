@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "actaflow-engine"
-version = "0.1.0"
+version = "0.2.0"
 description = "ActaFlow - motor de voz a texto y extraccion de entidades juridicas"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -18,6 +18,14 @@ dependencies = [
     "av>=15,<19",
     "psutil>=7.2,<8",
     "spacy>=3.8,<3.9",
+    # gRPC: servidor nativo, estado de error tipado y reflexion (las tres con la misma version).
+    "grpcio==1.84.0",
+    "grpcio-status==1.84.0",
+    "grpcio-reflection==1.84.0",
+    # El codigo generado con grpcio-tools 1.84.0 (protoc 35.1) exige protobuf 7.36 o mayor.
+    "protobuf>=7.36,<8",
+    # Reglas de validacion del contrato (la 2.x usa otro runtime de protobuf).
+    "protovalidate==1.2.0",
 ]
 
 [project.optional-dependencies]
@@ -25,10 +33,14 @@ dev = [
     "pytest>=9.1,<10",
     "httpx2>=2.13,<3",
     "ruff>=0.16,<0.17",
+    # Genera el codigo Python de los contratos (scripts/generar_contratos.py).
+    "grpcio-tools==1.84.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+# El codigo generado (actaflow.*, buf.validate) son paquetes de espacio de nombres sin __init__.py.
+namespaces = true
 
 [tool.setuptools.package-data]
 "actaflow_engine.diagnostico" = ["muestras/*.txt"]
@@ -42,12 +54,14 @@ addopts = "-ra"
 line-length = 100
 target-version = "py312"
 src = ["src", "tests"]
+# Codigo generado desde los contratos: no se edita ni se revisa a mano.
+extend-exclude = ["src/actaflow", "src/buf"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "S"]
 ignore = []
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106"]
+"tests/**" = ["S101", "S105", "S106", "S310"]
 "scripts/**" = ["S310"]
 "src/actaflow_engine/diagnostico/benchmark.py" = ["S603"]
