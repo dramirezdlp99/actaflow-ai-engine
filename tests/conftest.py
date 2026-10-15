@@ -1,15 +1,21 @@
 from __future__ import annotations
 
+import asyncio
+import threading
+import time
+from collections.abc import Iterator
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
+import uvicorn
 from fastapi.testclient import TestClient
 
 from actaflow_engine.config import Settings
 from actaflow_engine.main import create_app
 
 # Secreto falso y publico, solo para pruebas. Los vectores de firma de los tres repos
-# (BFF, backend y motor) se calcularon con este mismo valor.
+# (BFF, microservicios Java y motor) se calcularon con este mismo valor.
 SECRETO_PRUEBA = "secreto-de-prueba-publico-solo-para-tests-0123456789"
 
 
@@ -39,7 +45,8 @@ def settings(models_dir: Path, audio_prueba: Path) -> Settings:
         hmac_secret=SECRETO_PRUEBA,
         models_dir=models_dir,
         benchmark_audio=audio_prueba,
-        max_body_bytes=2048,
+        max_body_bytes=4096,
+        grpc_bind="127.0.0.1:0",
         _env_file=None,
     )
 
@@ -69,5 +76,35 @@ def ejecutor_ok() -> EjecutorFalso:
 
 
 @pytest.fixture
-def cliente(settings: Settings, ejecutor_ok: EjecutorFalso) -> TestClient:
-    return TestClient(create_app(settings, ejecutor_benchmark=ejecutor_ok))
+def cliente(settings: Settings, ejecutor_ok: EjecutorFalso) -> Iterator[TestClient]:
+    with TestClient(create_app(settings, ejecutor_benchmark=ejecutor_ok)) as cliente:
+        yield cliente
+
+
+@dataclass(frozen=True)
+class MotorEnMarcha:
+    url_web: str
+    destino_grpc: str
+
+
+@pytest.fixture
+def motor(settings: Settings, ejecutor_ok: EjecutorFalso) -> Iterator[MotorEnMarcha]:
+    """Motor real: uvicorn (HTTP/1.1, gRPC-Web) + servidor gRPC nativo (HTTP/2), en un hilo."""
+    app = create_app(settings, ejecutor_benchmark=ejecutor_ok)
+    configuracion = uvicorn.Config(
+        app, host="127.0.0.1", port=0, log_level="warning", lifespan="on"
+    )
+    servidor = uvicorn.Server(configuracion)
+    hilo = threading.Thread(target=lambda: asyncio.run(servidor.serve()), daemon=True)
+    hilo.start()
+    limite = time.monotonic() + 20
+    while not servidor.started:
+        if time.monotonic() > limite or not hilo.is_alive():
+            raise RuntimeError("El motor no arranco")
+        time.sleep(0.02)
+    puerto_web = servidor.servers[0].sockets[0].getsockname()[1]
+    try:
+        yield MotorEnMarcha(f"http://127.0.0.1:{puerto_web}", f"127.0.0.1:{app.state.puerto_grpc}")
+    finally:
+        servidor.should_exit = True
+        hilo.join(timeout=15)
