@@ -62,3 +62,12 @@ def test_en_produccion_la_csp_es_estricta(models_dir, audio_prueba):
     )
     with TestClient(create_app(settings)) as cliente:
         assert "default-src 'none'" in cliente.get("/health").headers["content-security-policy"]
+
+
+def test_la_version_publicada_es_la_de_pyproject():
+    import tomllib
+    from pathlib import Path
+
+    ruta = Path(__file__).parents[2] / "pyproject.toml"
+    pyproject = tomllib.loads(ruta.read_text(encoding="utf-8"))
+    assert __version__ == pyproject["project"]["version"]
