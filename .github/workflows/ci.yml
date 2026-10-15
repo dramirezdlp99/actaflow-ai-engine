@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   calidad:
-    name: Lint y tests
+    name: Contratos, lint y tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,13 +18,20 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Contratos identicos a la version publicada
+        run: node scripts/contracts.mjs check --remote
       - name: Instalar dependencias
         run: pip install -e ".[dev]"
+      - name: Codigo generado al dia con los contratos
+        run: python scripts/generar_contratos.py --check
       - name: Lint
         run: ruff check src tests scripts
       - name: Formato
         run: ruff format --check src tests scripts
-      - name: Tests
+      - name: Tests (gRPC nativo, gRPC-Web, firma y reglas del contrato)
         run: python -m pytest -q
 
   imagen:
@@ -49,20 +56,26 @@ jobs:
           cat health.json
           grep -q '"listo":true' health.json
           grep -q 'es_core_news_sm' health.json
-      - name: Benchmark real de tiny dentro del contenedor
+      - name: Estado y benchmark real de tiny por gRPC-Web, como lo llama legal-case-service
         run: |
           docker exec -i motor python - <<'EOF'
-          import json, os, time, urllib.request
-          from actaflow_engine.seguridad.hmac_firma import cabeceras_firmadas
-          cuerpo = json.dumps({"modelos": ["tiny"], "con_spacy": True}).encode()
-          cab = {"Content-Type": "application/json"}
-          cab.update(cabeceras_firmadas(os.environ["ACTAFLOW_ENGINE_HMAC_SECRET"], "POST",
-                                        "/v1/diagnostico/benchmark", cuerpo))
-          req = urllib.request.Request("http://localhost:8002/v1/diagnostico/benchmark",
-                                       data=cuerpo, headers=cab, method="POST")
-          datos = json.loads(urllib.request.urlopen(req, timeout=600).read())
-          print(json.dumps(datos, indent=2, ensure_ascii=False))
-          assert datos["resultados"][0]["estado"] == "ok", datos
+          import os
+          from google.protobuf.json_format import MessageToJson
+          from actaflow.engine.v1 import engine_pb2
+          from actaflow.system.v1 import service_status_pb2 as estado
+          from actaflow_engine.rpc.cliente_web import llamar
+          secreto = os.environ["ACTAFLOW_ENGINE_HMAC_SECRET"]
+          url = "http://localhost:8002"
+          r = llamar(url, "/actaflow.system.v1.ServiceStatusService/GetServiceStatus",
+                     estado.GetServiceStatusRequest(), estado.GetServiceStatusResponse, secreto)
+          print(MessageToJson(r))
+          assert r.status.state == estado.HEALTH_STATE_OK, r
+          assert r.status.served_via == estado.TRANSPORT_GRPC_WEB, r
+          b = llamar(url, "/actaflow.engine.v1.EngineDiagnosticsService/RunBenchmark",
+                     engine_pb2.RunBenchmarkRequest(models=[engine_pb2.MODEL_SIZE_TINY], include_nlp=True),
+                     engine_pb2.RunBenchmarkResponse, secreto, timeout_s=600)
+          print(MessageToJson(b))
+          assert b.results[0].outcome == engine_pb2.BENCHMARK_OUTCOME_OK, b
           EOF
       - name: Logs del contenedor
         if: always()
