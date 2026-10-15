@@ -41,19 +41,24 @@ def test_ruta_inexistente_devuelve_error_uniforme(cliente: TestClient):
     assert resp.json() == {"estado": 404, "codigo": "no_encontrado", "mensaje": "Not Found"}
 
 
-def test_en_produccion_no_se_publica_la_documentacion(models_dir, audio_prueba):
+def test_el_antiguo_endpoint_http_del_benchmark_ya_no_existe(cliente: TestClient):
+    resp = cliente.post("/v1/diagnostico/benchmark", json={"modelos": ["tiny"]})
+    assert resp.status_code == 404
+
+
+def test_no_se_publica_documentacion_openapi_porque_la_api_es_grpc(cliente: TestClient):
+    assert cliente.get("/docs").status_code == 404
+    assert cliente.get("/openapi.json").status_code == 404
+
+
+def test_en_produccion_la_csp_es_estricta(models_dir, audio_prueba):
     settings = Settings(
         hmac_secret=SECRETO_PRUEBA,
         environment="produccion",
         models_dir=models_dir,
         benchmark_audio=audio_prueba,
+        grpc_bind="127.0.0.1:0",
         _env_file=None,
     )
-    cliente = TestClient(create_app(settings))
-    assert cliente.get("/docs").status_code == 404
-    assert cliente.get("/openapi.json").status_code == 404
-    assert "default-src 'none'" in cliente.get("/health").headers["content-security-policy"]
-
-
-def test_en_local_si_hay_documentacion(cliente: TestClient):
-    assert cliente.get("/openapi.json").status_code == 200
+    with TestClient(create_app(settings)) as cliente:
+        assert "default-src 'none'" in cliente.get("/health").headers["content-security-policy"]
