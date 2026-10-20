@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from actaflow_engine import __version__
 from actaflow_engine.config import Settings
 from actaflow_engine.main import create_app
+from actaflow_engine.seguridad.procesador import ClaveProcesador
 from tests.conftest import SECRETO_PRUEBA, crear_modelo_falso
 
 
@@ -55,6 +56,7 @@ def test_en_produccion_la_csp_es_estricta(models_dir, audio_prueba):
     settings = Settings(
         hmac_secret=SECRETO_PRUEBA,
         environment="produccion",
+        processor_private_key=ClaveProcesador.nueva().pkcs8_base64url(),
         models_dir=models_dir,
         benchmark_audio=audio_prueba,
         grpc_bind="127.0.0.1:0",
