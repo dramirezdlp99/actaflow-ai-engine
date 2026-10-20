@@ -4,6 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from actaflow_engine.config import Settings
+from actaflow_engine.seguridad.procesador import ClaveProcesador
 from tests.conftest import SECRETO_PRUEBA
 
 
@@ -21,6 +22,9 @@ def test_lee_la_configuracion_de_variables_de_entorno(monkeypatch):
     monkeypatch.setenv("ACTAFLOW_ENGINE_HMAC_SECRET", SECRETO_PRUEBA)
     monkeypatch.setenv("ACTAFLOW_ENGINE_ENVIRONMENT", "produccion")
     monkeypatch.setenv("ACTAFLOW_ENGINE_ASR_MODEL", "base")
+    monkeypatch.setenv(
+        "ACTAFLOW_ENGINE_PROCESSOR_PRIVATE_KEY", ClaveProcesador.nueva().pkcs8_base64url()
+    )
     settings = Settings(_env_file=None)
     assert settings.es_produccion
     assert settings.asr_model == "base"
