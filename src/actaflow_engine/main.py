@@ -24,6 +24,7 @@ from actaflow_engine.errores import registrar_manejadores
 from actaflow_engine.middleware import CabecerasSeguridad, LimiteCuerpo
 from actaflow_engine.rpc.pasarela import PasarelaGrpcWeb
 from actaflow_engine.rpc.servidor import crear_servidor
+from actaflow_engine.voz.transcriptor import Transcriptor
 
 log = logging.getLogger("actaflow_engine")
 
@@ -39,13 +40,14 @@ def destino_local(bind: str, puerto: int) -> str:
 def create_app(
     settings: Settings | None = None,
     ejecutor_benchmark: Ejecutor = ejecutor_subproceso,
+    transcriptor: Transcriptor | None = None,
 ) -> FastAPI:
     settings = settings or Settings()  # type: ignore[call-arg]
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
     @asynccontextmanager
     async def ciclo_de_vida(app: FastAPI) -> AsyncIterator[None]:
-        servidor, puerto = crear_servidor(settings, ejecutor_benchmark)
+        servidor, puerto = crear_servidor(settings, ejecutor_benchmark, transcriptor=transcriptor)
         await servidor.start()
         pasarela = PasarelaGrpcWeb(
             destino_local(settings.grpc_bind, puerto), settings.max_body_bytes
