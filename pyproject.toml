@@ -26,6 +26,8 @@ dependencies = [
     "protobuf>=7.36,<8",
     # Reglas de validacion del contrato (la 2.x usa otro runtime de protobuf).
     "protovalidate==1.2.0",
+    # Patron "procesador sellado": ECDH P-256 + HKDF + AES-256-GCM, igual que el navegador.
+    "cryptography>=46,<47",
 ]
 
 [project.optional-dependencies]
