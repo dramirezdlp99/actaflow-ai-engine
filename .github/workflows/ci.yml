@@ -115,3 +115,42 @@ jobs:
           assert resultado.amounts[0].amount.amount.units == 1500000
           assert resultado.deadlines[0].deadline.days == 30
           EOF
+      - name: Transcripcion real de un segmento sellado por gRPC-Web (modelo tiny de la imagen)
+        run: |
+          docker exec -i motor python - <<'EOF'
+          import io, os, uuid, wave
+          from actaflow.crypto.v1 import crypto_pb2
+          from actaflow.engine.v1 import engine_pb2
+          from actaflow.legal.v1 import transcript_pb2
+          from actaflow_engine.rpc.cliente_web import llamar
+          from actaflow_engine.seguridad.procesador import aad, cifrar, descifrar, envolver
+          secreto = os.environ["ACTAFLOW_ENGINE_HMAC_SECRET"]
+          url = "http://localhost:8002"
+          # Los primeros 20 s de la muestra en espanol: un segmento dura a lo sumo 30 s.
+          with wave.open(os.environ["ACTAFLOW_ENGINE_BENCHMARK_AUDIO"]) as origen:
+              cuadros = origen.readframes(origen.getframerate() * 20)
+              salida = io.BytesIO()
+              with wave.open(salida, "wb") as destino:
+                  destino.setparams(origen.getparams())
+                  destino.writeframes(cuadros)
+          (clave,) = llamar(url, "/actaflow.crypto.v1.ProcessorKeyService/GetProcessorKeys",
+                            crypto_pb2.GetProcessorKeysRequest(), crypto_pb2.GetProcessorKeysResponse, secreto).keys
+          caso, segmento, k = str(uuid.uuid4()), str(uuid.uuid4()), os.urandom(32)
+          audio = engine_pb2.SealedAudioSegment(audio=salida.getvalue(), encoding=engine_pb2.AUDIO_ENCODING_WAV_PCM16,
+                                                speaker_participant_id=str(uuid.uuid4()))
+          sobre = crypto_pb2.SealedEnvelope(
+              payload=cifrar(k, "ci:1", audio.SerializeToString(), "actaflow.engine.v1.SealedAudioSegment",
+                             aad("audio-segment", caso, segmento)),
+              processor_key=envolver(k, clave.key.key_id, clave.key.public_key),
+              content_key_for_case=cifrar(os.urandom(32), "ci:caso", k, "k", b"k"))
+          r = llamar(url, "/actaflow.engine.v1.TranscriptionService/TranscribeSegment",
+                     engine_pb2.TranscribeSegmentRequest(case_id=caso, segment_id=segmento, audio=sobre, language="es"),
+                     engine_pb2.TranscribeSegmentResponse, secreto, timeout_s=300)
+          resultado = transcript_pb2.TranscriptionResult.FromString(descifrar(
+              k, r.transcript, "actaflow.legal.v1.TranscriptionResult", aad("transcript", caso, segmento)))
+          texto = " ".join(s.text for s in resultado.segments)
+          print(texto)
+          print("factor de tiempo real:", resultado.real_time_factor)
+          assert len(texto) > 20
+          assert any(p in texto.lower() for p in ("pasto", "audiencia", "conciliaci", "ciudad")), texto
+          EOF
