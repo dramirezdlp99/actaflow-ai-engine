@@ -90,7 +90,11 @@ class MotorEnMarcha:
 @pytest.fixture
 def motor(settings: Settings, ejecutor_ok: EjecutorFalso) -> Iterator[MotorEnMarcha]:
     """Motor real: uvicorn (HTTP/1.1, gRPC-Web) + servidor gRPC nativo (HTTP/2), en un hilo."""
-    app = create_app(settings, ejecutor_benchmark=ejecutor_ok)
+    yield from arrancar(create_app(settings, ejecutor_benchmark=ejecutor_ok))
+
+
+def arrancar(app) -> Iterator[MotorEnMarcha]:  # noqa: ANN001
+    """Arranca una app del motor en un hilo y la detiene al final."""
     configuracion = uvicorn.Config(
         app, host="127.0.0.1", port=0, log_level="warning", lifespan="on"
     )
