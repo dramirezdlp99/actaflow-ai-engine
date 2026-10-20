@@ -44,8 +44,11 @@ jobs:
         run: docker build --build-arg ASR_MODELOS=tiny -t actaflow-ai-engine:ci .
       - name: Arrancar el contenedor con limites parecidos a Render Free
         run: |
+          # Clave del motor temporal, solo para esta ejecucion (la de produccion vive en Render).
+          CLAVE=$(openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt -outform DER | base64 -w0)
           docker run -d --name motor -p 8002:8002 --memory=512m \
             -e ACTAFLOW_ENGINE_HMAC_SECRET=secreto-de-ci-publico-no-usar-en-produccion-000 \
+            -e ACTAFLOW_ENGINE_PROCESSOR_PRIVATE_KEY="$CLAVE" \
             actaflow-ai-engine:ci
       - name: Esperar /health y comprobar el modelo
         run: |
@@ -80,3 +83,35 @@ jobs:
       - name: Logs del contenedor
         if: always()
         run: docker logs motor
+      - name: Extraccion sellada por gRPC-Web, como la pedira legal-case-service
+        run: |
+          docker exec -i motor python - <<'EOF'
+          import os, uuid
+          from actaflow.common.v1 import values_pb2
+          from actaflow.crypto.v1 import crypto_pb2
+          from actaflow.engine.v1 import engine_pb2
+          from actaflow.legal.v1 import entities_pb2
+          from actaflow_engine.rpc.cliente_web import llamar
+          from actaflow_engine.seguridad.procesador import aad, cifrar, descifrar, envolver
+          secreto = os.environ["ACTAFLOW_ENGINE_HMAC_SECRET"]
+          url = "http://localhost:8002"
+          (clave,) = llamar(url, "/actaflow.crypto.v1.ProcessorKeyService/GetProcessorKeys",
+                            crypto_pb2.GetProcessorKeysRequest(), crypto_pb2.GetProcessorKeysResponse, secreto).keys
+          caso, extraccion, k = str(uuid.uuid4()), str(uuid.uuid4()), os.urandom(32)
+          entrada = engine_pb2.ExtractionInput(
+              text="El convocado pagara la suma de $1.500.000 dentro de los 30 dias habiles siguientes.",
+              reference_date=values_pb2.CalendarDate(year=2026, month=10, day=20))
+          sobre = crypto_pb2.SealedEnvelope(
+              payload=cifrar(k, "ci:1", entrada.SerializeToString(), "actaflow.engine.v1.ExtractionInput",
+                             aad("extraction-input", caso, extraccion)),
+              processor_key=envolver(k, clave.key.key_id, clave.key.public_key),
+              content_key_for_case=cifrar(os.urandom(32), "ci:caso", k, "k", b"k"))
+          r = llamar(url, "/actaflow.engine.v1.ExtractionService/ExtractEntities",
+                     engine_pb2.ExtractEntitiesRequest(case_id=caso, extraction_id=extraccion, input=sobre),
+                     engine_pb2.ExtractEntitiesResponse, secreto)
+          resultado = entities_pb2.EntityExtractionResult.FromString(descifrar(
+              k, r.entities, "actaflow.legal.v1.EntityExtractionResult", aad("extraction-result", caso, extraccion)))
+          print(resultado)
+          assert resultado.amounts[0].amount.amount.units == 1500000
+          assert resultado.deadlines[0].deadline.days == 30
+          EOF
