@@ -35,8 +35,39 @@ Servicios que implementa hoy:
 | `actaflow.system.v1.ServiceStatusService` | Implementado: estado de los modelos y transporte usado |
 | `actaflow.engine.v1.EngineDiagnosticsService` | Implementado: benchmark de modelos en el entorno real |
 | `actaflow.engine.v1.TranscriptionService` | Contrato listo; responde `UNIMPLEMENTED` hasta el bloque IA-6 |
-| `actaflow.engine.v1.ExtractionService` | Contrato listo; extractores en los bloques IA-2 a IA-5 |
-| `actaflow.crypto.v1.ProcessorKeyService` | Contrato listo; llega con el audio sellado (IA-6) |
+| `actaflow.engine.v1.ExtractionService` | Implementado (IA-3): las cinco familias de entidades, sobre contenido sellado |
+| `actaflow.crypto.v1.ProcessorKeyService` | Implementado (IA-3): clave pública ECDH P-256 del motor |
+
+## Contenido sellado para el motor (IA-3)
+
+El motor nunca recibe la transcripción en claro por la red. El navegador genera una clave de
+contenido K, cifra la entrada con K y envuelve K para la **clave pública del motor**
+(`ProcessorKeyService`), con el mismo esquema que las claves de los casos (ECDH P-256 → HKDF-SHA-256
+→ AES-256-GCM). legal-case-service solo reenvía bytes cifrados. El motor desenvuelve K en memoria,
+procesa y cifra el resultado con la misma K, que los participantes abren con la clave del caso.
+El AAD, que nunca se transmite, es `actaflow/v1|<propósito>|<case_id>|<resource_id>`.
+
+La clave privada del motor va en `ACTAFLOW_ENGINE_PROCESSOR_PRIVATE_KEY` (obligatoria en
+producción, distinta en local):
+
+```powershell
+python -m actaflow_engine.herramientas.clave_procesador
+```
+
+## Extracción de entidades (IA-3)
+
+Reglas deterministas en `extraccion/`: son explicables, no dependen de servicios externos y cada
+entidad lleva su fragmento de origen, su confianza y si requiere confirmación.
+
+| Familia | Qué reconoce |
+|---|---|
+| Partes | Personas con cédula de ciudadanía o extranjería o pasaporte; empresas con NIT y dígito de verificación (módulo 11 de la DIAN); rol (convocante, convocado, apoderado…); enlace con los participantes del caso |
+| Montos | `$1.500.000`, `1.500.000 pesos`, `2 millones de pesos`, "un millón quinientos mil pesos"; cuotas y valor de cada cuota; quién paga y quién recibe |
+| Plazos de pago | Fechas ("15 de noviembre de 2026", "el primero de diciembre", `15/11/2026`) y plazos relativos ("dentro de los treinta días hábiles"), con días hábiles según los festivos de Colombia (Ley 51 de 1983) |
+| Compromisos de entrega | "entregará / restituirá / devolverá …", con su obligado y su fecha |
+| Cláusulas penales | Multa fija, porcentaje e intereses de mora, con su condición ("en caso de …") |
+
+Cada línea del texto de entrada es un segmento de la transcripción (`segment_index`).
 
 ## Dos transportes, el mismo código
 
