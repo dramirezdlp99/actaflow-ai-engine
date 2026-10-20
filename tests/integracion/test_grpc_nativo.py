@@ -123,14 +123,6 @@ def test_benchmark_sin_audio_de_prueba_es_precondicion_fallida(canal, audio_prue
     assert exc.value.code() == grpc.StatusCode.FAILED_PRECONDITION
 
 
-def test_los_servicios_aun_no_implementados_responden_unimplemented(canal):
-    stub = engine_pb2_grpc.TranscriptionServiceStub(canal)
-    peticion = engine_pb2.TranscribeSegmentRequest()
-    with pytest.raises(grpc.RpcError) as exc:
-        stub.TranscribeSegment(peticion, metadata=firmado("/x", peticion))
-    assert exc.value.code() == grpc.StatusCode.UNIMPLEMENTED
-
-
 def test_la_reflexion_describe_los_servicios_publicados(canal):
     stub = reflection_pb2_grpc.ServerReflectionStub(canal)
     respuesta = next(
