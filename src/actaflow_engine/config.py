@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 from pathlib import Path
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 MODELOS_ASR_SOPORTADOS: tuple[str, ...] = ("tiny", "base", "small")
@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     # Servidor gRPC nativo (HTTP/2). En Render solo es alcanzable desde el mismo contenedor:
     # la pasarela gRPC-Web del puerto web le reenvia las llamadas.
     grpc_bind: str = Field("127.0.0.1:8102", pattern=r"^[0-9a-zA-Z.\[\]:]+:[0-9]{1,5}$")
+    # Clave privada ECDH P-256 del motor (PKCS#8 en base64url) para abrir lo que se le sella.
+    # En local puede faltar (se usa una temporal); en produccion es obligatoria.
+    processor_private_key: SecretStr | None = None
 
     @field_validator("hmac_secret")
     @classmethod
@@ -51,6 +54,12 @@ class Settings(BaseSettings):
         if valor not in MODELOS_ASR_SOPORTADOS:
             raise ValueError(f"Modelo ASR no soportado: {valor}. Usa {MODELOS_ASR_SOPORTADOS}")
         return valor
+
+    @model_validator(mode="after")
+    def _clave_en_produccion(self) -> Settings:
+        if self.environment is Entorno.PRODUCCION and self.processor_private_key is None:
+            raise ValueError("ACTAFLOW_ENGINE_PROCESSOR_PRIVATE_KEY es obligatoria en produccion")
+        return self
 
     @property
     def es_produccion(self) -> bool:
