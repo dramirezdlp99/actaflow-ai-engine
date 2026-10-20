@@ -34,7 +34,7 @@ Servicios que implementa hoy:
 |---|---|
 | `actaflow.system.v1.ServiceStatusService` | Implementado: estado de los modelos y transporte usado |
 | `actaflow.engine.v1.EngineDiagnosticsService` | Implementado: benchmark de modelos en el entorno real |
-| `actaflow.engine.v1.TranscriptionService` | Contrato listo; responde `UNIMPLEMENTED` hasta el bloque IA-6 |
+| `actaflow.engine.v1.TranscriptionService` | Implementado (IA-4): segmentos de audio sellados y transcripción en vivo |
 | `actaflow.engine.v1.ExtractionService` | Implementado (IA-3): las cinco familias de entidades, sobre contenido sellado |
 | `actaflow.crypto.v1.ProcessorKeyService` | Implementado (IA-3): clave pública ECDH P-256 del motor |
 
@@ -53,6 +53,23 @@ producción, distinta en local):
 ```powershell
 python -m actaflow_engine.herramientas.clave_procesador
 ```
+
+## Transcripción (IA-4)
+
+- **`TranscribeSegment`** (el camino de producción, unario, funciona por gRPC-Web): una
+  intervención de hasta 30 s, en Ogg Opus (lo que graba el navegador) o WAV PCM, sellada para el
+  motor. Los nombres de los participantes y el vocabulario jurídico van **sellados con el audio**
+  como pistas para el modelo (son confidenciales). Devuelve un `TranscriptionResult` cifrado con
+  la misma clave de contenido, con el hablante que marcó la sala, la confianza de cada tramo y el
+  factor de tiempo real.
+- **`StreamTranscription`** (gRPC nativo HTTP/2, local y CI): sesiones de hasta 30 s. Envía un
+  parcial cada ~3 s de audio nuevo y el resultado final al cerrar.
+- faster-whisper en CPU int8. El modelo se carga **una vez**, en la primera transcripción, y las
+  transcripciones van de una en una (Render Free: una CPU, 512 MB). El navegador ya cortó el
+  audio por actividad de voz, así que el modelo no repite ese filtro.
+- AAD: `audio-segment` y `transcript` con el id del segmento; en vivo, `audio-chunk` y
+  `transcript-partial` con `<sesión>/<n>`, para que un trozo no se pueda reordenar ni mover de
+  sesión.
 
 ## Extracción de entidades (IA-3)
 
