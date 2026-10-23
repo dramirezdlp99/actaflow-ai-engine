@@ -28,6 +28,8 @@ dependencies = [
     "protovalidate==1.2.0",
     # Patron "procesador sellado": ECDH P-256 + HKDF + AES-256-GCM, igual que el navegador.
     "cryptography>=46,<47",
+    # PDF del acta final (puro Python, sin dependencias del sistema).
+    "fpdf2==2.8.5",
 ]
 
 [project.optional-dependencies]
