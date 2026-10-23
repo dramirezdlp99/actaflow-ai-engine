@@ -27,7 +27,7 @@ from actaflow.crypto.v1 import crypto_pb2 as actaflow_dot_crypto_dot_v1_dot_cryp
 from buf.validate import validate_pb2 as buf_dot_validate_dot_validate__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1f\x61\x63taflow/engine/v1/engine.proto\x12\x12\x61\x63taflow.engine.v1\x1a\x1f\x61\x63taflow/common/v1/values.proto\x1a\x1f\x61\x63taflow/crypto/v1/crypto.proto\x1a\x1b\x62uf/validate/validate.proto\"U\n\x10RecognitionHints\x12\x1d\n\x05names\x18\x01 \x03(\tB\x0e\xbaH\x0b\x92\x01\x08\x10\x1e\"\x04r\x02\x18x\x12\"\n\nvocabulary\x18\x02 \x03(\tB\x0e\xbaH\x0b\x92\x01\x08\x10\x64\"\x04r\x02\x18<\"\xd0\x01\n\x12SealedAudioSegment\x12\x1a\n\x05\x61udio\x18\x01 \x01(\x0c\x42\x0b\xbaH\x08z\x06\x10\x01\x18\xe0\xc6[\x12?\n\x08\x65ncoding\x18\x02 \x01(\x0e\x32!.actaflow.engine.v1.AudioEncodingB\n\xbaH\x07\x82\x01\x04\x10\x01 \x00\x12(\n\x16speaker_participant_id\x18\x03 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x33\n\x05hints\x18\x04 \x01(\x0b\x32$.actaflow.engine.v1.RecognitionHints\"\xb2\x01\n\x18TranscribeSegmentRequest\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1c\n\nsegment_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x39\n\x05\x61udio\x18\x03 \x01(\x0b\x32\".actaflow.crypto.v1.SealedEnvelopeB\x06\xbaH\x03\xc8\x01\x01\x12\"\n\x08language\x18\x04 \x01(\tB\x10\xbaH\rr\x0bR\x02\x65sR\x05\x65s-CO\"R\n\x19TranscribeSegmentResponse\x12\x35\n\ntranscript\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\"\xa1\x01\n\x1aStreamTranscriptionRequest\x12=\n\x05start\x18\x01 \x01(\x0b\x32,.actaflow.engine.v1.StreamTranscriptionStartH\x00\x12\x32\n\x05\x63hunk\x18\x02 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlobH\x00\x42\x10\n\x07payload\x12\x05\xbaH\x02\x08\x01\"\xd1\x01\n\x18StreamTranscriptionStart\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1c\n\nsession_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12;\n\x0b\x63ontent_key\x18\x03 \x01(\x0b\x32\x1e.actaflow.crypto.v1.WrappedKeyB\x06\xbaH\x03\xc8\x01\x01\x12?\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32!.actaflow.engine.v1.AudioEncodingB\n\xbaH\x07\x82\x01\x04\x10\x01 \x00\"`\n\x1bStreamTranscriptionResponse\x12\x32\n\x07partial\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\x12\r\n\x05\x66inal\x18\x02 \x01(\x08\"\xb4\x01\n\x0f\x45xtractionInput\x12\x19\n\x04text\x18\x01 \x01(\tB\x0b\xbaH\x08r\x06\x10\x01\x18\xc0\x9a\x0c\x12@\n\x0ereference_date\x18\x02 \x01(\x0b\x32 .actaflow.common.v1.CalendarDateB\x06\xbaH\x03\xc8\x01\x01\x12\x44\n\x0cparticipants\x18\x03 \x03(\x0b\x32$.actaflow.engine.v1.KnownParticipantB\x08\xbaH\x05\x92\x01\x02\x10\x1e\"S\n\x10KnownParticipant\x12 \n\x0eparticipant_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1d\n\x0c\x64isplay_name\x18\x02 \x01(\tB\x07\xbaH\x04r\x02\x18x\"\x8f\x01\n\x16\x45xtractEntitiesRequest\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1f\n\rextraction_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x39\n\x05input\x18\x03 \x01(\x0b\x32\".actaflow.crypto.v1.SealedEnvelopeB\x06\xbaH\x03\xc8\x01\x01\"N\n\x17\x45xtractEntitiesResponse\x12\x33\n\x08\x65ntities\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\"p\n\x13RunBenchmarkRequest\x12\x44\n\x06models\x18\x01 \x03(\x0e\x32\x1d.actaflow.engine.v1.ModelSizeB\x15\xbaH\x12\x92\x01\x0f\x08\x01\x10\x03\x18\x01\"\x07\x82\x01\x04\x10\x01 \x00\x12\x13\n\x0binclude_nlp\x18\x02 \x01(\x08\"\\\n\x0f\x43ontainerLimits\x12\x1a\n\x12memory_limit_bytes\x18\x01 \x01(\x03\x12\x17\n\x0f\x63pu_quota_cores\x18\x02 \x01(\x01\x12\x14\n\x0cvisible_cpus\x18\x03 \x01(\x05\"\xad\x02\n\x0eModelBenchmark\x12,\n\x05model\x18\x01 \x01(\x0e\x32\x1d.actaflow.engine.v1.ModelSize\x12\x35\n\x07outcome\x18\x02 \x01(\x0e\x32$.actaflow.engine.v1.BenchmarkOutcome\x12\x0e\n\x06\x64\x65tail\x18\x03 \x01(\t\x12\x14\n\x0cload_seconds\x18\x04 \x01(\x01\x12\x1d\n\x15transcription_seconds\x18\x05 \x01(\x01\x12\x15\n\raudio_seconds\x18\x06 \x01(\x01\x12\x18\n\x10real_time_factor\x18\x07 \x01(\x01\x12\x19\n\x11peak_memory_bytes\x18\x08 \x01(\x03\x12\x17\n\x0fword_error_rate\x18\t \x01(\x01\x12\x0c\n\x04text\x18\n \x01(\t\"\x80\x01\n\x14RunBenchmarkResponse\x12\x33\n\x06limits\x18\x01 \x01(\x0b\x32#.actaflow.engine.v1.ContainerLimits\x12\x33\n\x07results\x18\x02 \x03(\x0b\x32\".actaflow.engine.v1.ModelBenchmark*j\n\rAudioEncoding\x12\x1e\n\x1a\x41UDIO_ENCODING_UNSPECIFIED\x10\x00\x12\x1b\n\x17\x41UDIO_ENCODING_OGG_OPUS\x10\x01\x12\x1c\n\x18\x41UDIO_ENCODING_WAV_PCM16\x10\x02*g\n\tModelSize\x12\x1a\n\x16MODEL_SIZE_UNSPECIFIED\x10\x00\x12\x13\n\x0fMODEL_SIZE_TINY\x10\x01\x12\x13\n\x0fMODEL_SIZE_BASE\x10\x02\x12\x14\n\x10MODEL_SIZE_SMALL\x10\x03*\xd5\x01\n\x10\x42\x65nchmarkOutcome\x12!\n\x1d\x42\x45NCHMARK_OUTCOME_UNSPECIFIED\x10\x00\x12\x18\n\x14\x42\x45NCHMARK_OUTCOME_OK\x10\x01\x12#\n\x1f\x42\x45NCHMARK_OUTCOME_OUT_OF_MEMORY\x10\x02\x12\x1d\n\x19\x42\x45NCHMARK_OUTCOME_TIMEOUT\x10\x03\x12\x1b\n\x17\x42\x45NCHMARK_OUTCOME_ERROR\x10\x04\x12#\n\x1f\x42\x45NCHMARK_OUTCOME_NOT_INSTALLED\x10\x05\x32\x84\x02\n\x14TranscriptionService\x12p\n\x11TranscribeSegment\x12,.actaflow.engine.v1.TranscribeSegmentRequest\x1a-.actaflow.engine.v1.TranscribeSegmentResponse\x12z\n\x13StreamTranscription\x12..actaflow.engine.v1.StreamTranscriptionRequest\x1a/.actaflow.engine.v1.StreamTranscriptionResponse(\x01\x30\x01\x32\x7f\n\x11\x45xtractionService\x12j\n\x0f\x45xtractEntities\x12*.actaflow.engine.v1.ExtractEntitiesRequest\x1a+.actaflow.engine.v1.ExtractEntitiesResponse2}\n\x18\x45ngineDiagnosticsService\x12\x61\n\x0cRunBenchmark\x12\'.actaflow.engine.v1.RunBenchmarkRequest\x1a(.actaflow.engine.v1.RunBenchmarkResponseB1\n com.actaflow.contracts.engine.v1B\x0b\x45ngineProtoP\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1f\x61\x63taflow/engine/v1/engine.proto\x12\x12\x61\x63taflow.engine.v1\x1a\x1f\x61\x63taflow/common/v1/values.proto\x1a\x1f\x61\x63taflow/crypto/v1/crypto.proto\x1a\x1b\x62uf/validate/validate.proto\"U\n\x10RecognitionHints\x12\x1d\n\x05names\x18\x01 \x03(\tB\x0e\xbaH\x0b\x92\x01\x08\x10\x1e\"\x04r\x02\x18x\x12\"\n\nvocabulary\x18\x02 \x03(\tB\x0e\xbaH\x0b\x92\x01\x08\x10\x64\"\x04r\x02\x18<\"\xd0\x01\n\x12SealedAudioSegment\x12\x1a\n\x05\x61udio\x18\x01 \x01(\x0c\x42\x0b\xbaH\x08z\x06\x10\x01\x18\xe0\xc6[\x12?\n\x08\x65ncoding\x18\x02 \x01(\x0e\x32!.actaflow.engine.v1.AudioEncodingB\n\xbaH\x07\x82\x01\x04\x10\x01 \x00\x12(\n\x16speaker_participant_id\x18\x03 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x33\n\x05hints\x18\x04 \x01(\x0b\x32$.actaflow.engine.v1.RecognitionHints\"\xb2\x01\n\x18TranscribeSegmentRequest\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1c\n\nsegment_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x39\n\x05\x61udio\x18\x03 \x01(\x0b\x32\".actaflow.crypto.v1.SealedEnvelopeB\x06\xbaH\x03\xc8\x01\x01\x12\"\n\x08language\x18\x04 \x01(\tB\x10\xbaH\rr\x0bR\x02\x65sR\x05\x65s-CO\"R\n\x19TranscribeSegmentResponse\x12\x35\n\ntranscript\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\"\xa1\x01\n\x1aStreamTranscriptionRequest\x12=\n\x05start\x18\x01 \x01(\x0b\x32,.actaflow.engine.v1.StreamTranscriptionStartH\x00\x12\x32\n\x05\x63hunk\x18\x02 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlobH\x00\x42\x10\n\x07payload\x12\x05\xbaH\x02\x08\x01\"\xd1\x01\n\x18StreamTranscriptionStart\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1c\n\nsession_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12;\n\x0b\x63ontent_key\x18\x03 \x01(\x0b\x32\x1e.actaflow.crypto.v1.WrappedKeyB\x06\xbaH\x03\xc8\x01\x01\x12?\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32!.actaflow.engine.v1.AudioEncodingB\n\xbaH\x07\x82\x01\x04\x10\x01 \x00\"`\n\x1bStreamTranscriptionResponse\x12\x32\n\x07partial\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\x12\r\n\x05\x66inal\x18\x02 \x01(\x08\"\x93\x01\n\x16RenderMinutePdfRequest\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1b\n\tminute_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x41\n\rfinal_content\x18\x03 \x01(\x0b\x32\".actaflow.crypto.v1.SealedEnvelopeB\x06\xbaH\x03\xc8\x01\x01\"q\n\x17RenderMinutePdfResponse\x12.\n\x03pdf\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\x12\x12\n\nsha256_hex\x18\x02 \x01(\t\x12\x12\n\npage_count\x18\x03 \x01(\x05\"\xb4\x01\n\x0f\x45xtractionInput\x12\x19\n\x04text\x18\x01 \x01(\tB\x0b\xbaH\x08r\x06\x10\x01\x18\xc0\x9a\x0c\x12@\n\x0ereference_date\x18\x02 \x01(\x0b\x32 .actaflow.common.v1.CalendarDateB\x06\xbaH\x03\xc8\x01\x01\x12\x44\n\x0cparticipants\x18\x03 \x03(\x0b\x32$.actaflow.engine.v1.KnownParticipantB\x08\xbaH\x05\x92\x01\x02\x10\x1e\"S\n\x10KnownParticipant\x12 \n\x0eparticipant_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1d\n\x0c\x64isplay_name\x18\x02 \x01(\tB\x07\xbaH\x04r\x02\x18x\"\x8f\x01\n\x16\x45xtractEntitiesRequest\x12\x19\n\x07\x63\x61se_id\x18\x01 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x1f\n\rextraction_id\x18\x02 \x01(\tB\x08\xbaH\x05r\x03\xb0\x01\x01\x12\x39\n\x05input\x18\x03 \x01(\x0b\x32\".actaflow.crypto.v1.SealedEnvelopeB\x06\xbaH\x03\xc8\x01\x01\"N\n\x17\x45xtractEntitiesResponse\x12\x33\n\x08\x65ntities\x18\x01 \x01(\x0b\x32!.actaflow.crypto.v1.EncryptedBlob\"p\n\x13RunBenchmarkRequest\x12\x44\n\x06models\x18\x01 \x03(\x0e\x32\x1d.actaflow.engine.v1.ModelSizeB\x15\xbaH\x12\x92\x01\x0f\x08\x01\x10\x03\x18\x01\"\x07\x82\x01\x04\x10\x01 \x00\x12\x13\n\x0binclude_nlp\x18\x02 \x01(\x08\"\\\n\x0f\x43ontainerLimits\x12\x1a\n\x12memory_limit_bytes\x18\x01 \x01(\x03\x12\x17\n\x0f\x63pu_quota_cores\x18\x02 \x01(\x01\x12\x14\n\x0cvisible_cpus\x18\x03 \x01(\x05\"\xad\x02\n\x0eModelBenchmark\x12,\n\x05model\x18\x01 \x01(\x0e\x32\x1d.actaflow.engine.v1.ModelSize\x12\x35\n\x07outcome\x18\x02 \x01(\x0e\x32$.actaflow.engine.v1.BenchmarkOutcome\x12\x0e\n\x06\x64\x65tail\x18\x03 \x01(\t\x12\x14\n\x0cload_seconds\x18\x04 \x01(\x01\x12\x1d\n\x15transcription_seconds\x18\x05 \x01(\x01\x12\x15\n\raudio_seconds\x18\x06 \x01(\x01\x12\x18\n\x10real_time_factor\x18\x07 \x01(\x01\x12\x19\n\x11peak_memory_bytes\x18\x08 \x01(\x03\x12\x17\n\x0fword_error_rate\x18\t \x01(\x01\x12\x0c\n\x04text\x18\n \x01(\t\"\x80\x01\n\x14RunBenchmarkResponse\x12\x33\n\x06limits\x18\x01 \x01(\x0b\x32#.actaflow.engine.v1.ContainerLimits\x12\x33\n\x07results\x18\x02 \x03(\x0b\x32\".actaflow.engine.v1.ModelBenchmark*j\n\rAudioEncoding\x12\x1e\n\x1a\x41UDIO_ENCODING_UNSPECIFIED\x10\x00\x12\x1b\n\x17\x41UDIO_ENCODING_OGG_OPUS\x10\x01\x12\x1c\n\x18\x41UDIO_ENCODING_WAV_PCM16\x10\x02*g\n\tModelSize\x12\x1a\n\x16MODEL_SIZE_UNSPECIFIED\x10\x00\x12\x13\n\x0fMODEL_SIZE_TINY\x10\x01\x12\x13\n\x0fMODEL_SIZE_BASE\x10\x02\x12\x14\n\x10MODEL_SIZE_SMALL\x10\x03*\xd5\x01\n\x10\x42\x65nchmarkOutcome\x12!\n\x1d\x42\x45NCHMARK_OUTCOME_UNSPECIFIED\x10\x00\x12\x18\n\x14\x42\x45NCHMARK_OUTCOME_OK\x10\x01\x12#\n\x1f\x42\x45NCHMARK_OUTCOME_OUT_OF_MEMORY\x10\x02\x12\x1d\n\x19\x42\x45NCHMARK_OUTCOME_TIMEOUT\x10\x03\x12\x1b\n\x17\x42\x45NCHMARK_OUTCOME_ERROR\x10\x04\x12#\n\x1f\x42\x45NCHMARK_OUTCOME_NOT_INSTALLED\x10\x05\x32\x84\x02\n\x14TranscriptionService\x12p\n\x11TranscribeSegment\x12,.actaflow.engine.v1.TranscribeSegmentRequest\x1a-.actaflow.engine.v1.TranscribeSegmentResponse\x12z\n\x13StreamTranscription\x12..actaflow.engine.v1.StreamTranscriptionRequest\x1a/.actaflow.engine.v1.StreamTranscriptionResponse(\x01\x30\x01\x32}\n\x0f\x44ocumentService\x12j\n\x0fRenderMinutePdf\x12*.actaflow.engine.v1.RenderMinutePdfRequest\x1a+.actaflow.engine.v1.RenderMinutePdfResponse2\x7f\n\x11\x45xtractionService\x12j\n\x0f\x45xtractEntities\x12*.actaflow.engine.v1.ExtractEntitiesRequest\x1a+.actaflow.engine.v1.ExtractEntitiesResponse2}\n\x18\x45ngineDiagnosticsService\x12\x61\n\x0cRunBenchmark\x12\'.actaflow.engine.v1.RunBenchmarkRequest\x1a(.actaflow.engine.v1.RunBenchmarkResponseB1\n com.actaflow.contracts.engine.v1B\x0b\x45ngineProtoP\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -63,6 +63,12 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_STREAMTRANSCRIPTIONSTART'].fields_by_name['content_key']._serialized_options = b'\272H\003\310\001\001'
   _globals['_STREAMTRANSCRIPTIONSTART'].fields_by_name['encoding']._loaded_options = None
   _globals['_STREAMTRANSCRIPTIONSTART'].fields_by_name['encoding']._serialized_options = b'\272H\007\202\001\004\020\001 \000'
+  _globals['_RENDERMINUTEPDFREQUEST'].fields_by_name['case_id']._loaded_options = None
+  _globals['_RENDERMINUTEPDFREQUEST'].fields_by_name['case_id']._serialized_options = b'\272H\005r\003\260\001\001'
+  _globals['_RENDERMINUTEPDFREQUEST'].fields_by_name['minute_id']._loaded_options = None
+  _globals['_RENDERMINUTEPDFREQUEST'].fields_by_name['minute_id']._serialized_options = b'\272H\005r\003\260\001\001'
+  _globals['_RENDERMINUTEPDFREQUEST'].fields_by_name['final_content']._loaded_options = None
+  _globals['_RENDERMINUTEPDFREQUEST'].fields_by_name['final_content']._serialized_options = b'\272H\003\310\001\001'
   _globals['_EXTRACTIONINPUT'].fields_by_name['text']._loaded_options = None
   _globals['_EXTRACTIONINPUT'].fields_by_name['text']._serialized_options = b'\272H\010r\006\020\001\030\300\232\014'
   _globals['_EXTRACTIONINPUT'].fields_by_name['reference_date']._loaded_options = None
@@ -81,12 +87,12 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_EXTRACTENTITIESREQUEST'].fields_by_name['input']._serialized_options = b'\272H\003\310\001\001'
   _globals['_RUNBENCHMARKREQUEST'].fields_by_name['models']._loaded_options = None
   _globals['_RUNBENCHMARKREQUEST'].fields_by_name['models']._serialized_options = b'\272H\022\222\001\017\010\001\020\003\030\001\"\007\202\001\004\020\001 \000'
-  _globals['_AUDIOENCODING']._serialized_start=2324
-  _globals['_AUDIOENCODING']._serialized_end=2430
-  _globals['_MODELSIZE']._serialized_start=2432
-  _globals['_MODELSIZE']._serialized_end=2535
-  _globals['_BENCHMARKOUTCOME']._serialized_start=2538
-  _globals['_BENCHMARKOUTCOME']._serialized_end=2751
+  _globals['_AUDIOENCODING']._serialized_start=2589
+  _globals['_AUDIOENCODING']._serialized_end=2695
+  _globals['_MODELSIZE']._serialized_start=2697
+  _globals['_MODELSIZE']._serialized_end=2800
+  _globals['_BENCHMARKOUTCOME']._serialized_start=2803
+  _globals['_BENCHMARKOUTCOME']._serialized_end=3016
   _globals['_RECOGNITIONHINTS']._serialized_start=150
   _globals['_RECOGNITIONHINTS']._serialized_end=235
   _globals['_SEALEDAUDIOSEGMENT']._serialized_start=238
@@ -101,26 +107,32 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_STREAMTRANSCRIPTIONSTART']._serialized_end=1087
   _globals['_STREAMTRANSCRIPTIONRESPONSE']._serialized_start=1089
   _globals['_STREAMTRANSCRIPTIONRESPONSE']._serialized_end=1185
-  _globals['_EXTRACTIONINPUT']._serialized_start=1188
-  _globals['_EXTRACTIONINPUT']._serialized_end=1368
-  _globals['_KNOWNPARTICIPANT']._serialized_start=1370
-  _globals['_KNOWNPARTICIPANT']._serialized_end=1453
-  _globals['_EXTRACTENTITIESREQUEST']._serialized_start=1456
-  _globals['_EXTRACTENTITIESREQUEST']._serialized_end=1599
-  _globals['_EXTRACTENTITIESRESPONSE']._serialized_start=1601
-  _globals['_EXTRACTENTITIESRESPONSE']._serialized_end=1679
-  _globals['_RUNBENCHMARKREQUEST']._serialized_start=1681
-  _globals['_RUNBENCHMARKREQUEST']._serialized_end=1793
-  _globals['_CONTAINERLIMITS']._serialized_start=1795
-  _globals['_CONTAINERLIMITS']._serialized_end=1887
-  _globals['_MODELBENCHMARK']._serialized_start=1890
-  _globals['_MODELBENCHMARK']._serialized_end=2191
-  _globals['_RUNBENCHMARKRESPONSE']._serialized_start=2194
-  _globals['_RUNBENCHMARKRESPONSE']._serialized_end=2322
-  _globals['_TRANSCRIPTIONSERVICE']._serialized_start=2754
-  _globals['_TRANSCRIPTIONSERVICE']._serialized_end=3014
-  _globals['_EXTRACTIONSERVICE']._serialized_start=3016
-  _globals['_EXTRACTIONSERVICE']._serialized_end=3143
-  _globals['_ENGINEDIAGNOSTICSSERVICE']._serialized_start=3145
-  _globals['_ENGINEDIAGNOSTICSSERVICE']._serialized_end=3270
+  _globals['_RENDERMINUTEPDFREQUEST']._serialized_start=1188
+  _globals['_RENDERMINUTEPDFREQUEST']._serialized_end=1335
+  _globals['_RENDERMINUTEPDFRESPONSE']._serialized_start=1337
+  _globals['_RENDERMINUTEPDFRESPONSE']._serialized_end=1450
+  _globals['_EXTRACTIONINPUT']._serialized_start=1453
+  _globals['_EXTRACTIONINPUT']._serialized_end=1633
+  _globals['_KNOWNPARTICIPANT']._serialized_start=1635
+  _globals['_KNOWNPARTICIPANT']._serialized_end=1718
+  _globals['_EXTRACTENTITIESREQUEST']._serialized_start=1721
+  _globals['_EXTRACTENTITIESREQUEST']._serialized_end=1864
+  _globals['_EXTRACTENTITIESRESPONSE']._serialized_start=1866
+  _globals['_EXTRACTENTITIESRESPONSE']._serialized_end=1944
+  _globals['_RUNBENCHMARKREQUEST']._serialized_start=1946
+  _globals['_RUNBENCHMARKREQUEST']._serialized_end=2058
+  _globals['_CONTAINERLIMITS']._serialized_start=2060
+  _globals['_CONTAINERLIMITS']._serialized_end=2152
+  _globals['_MODELBENCHMARK']._serialized_start=2155
+  _globals['_MODELBENCHMARK']._serialized_end=2456
+  _globals['_RUNBENCHMARKRESPONSE']._serialized_start=2459
+  _globals['_RUNBENCHMARKRESPONSE']._serialized_end=2587
+  _globals['_TRANSCRIPTIONSERVICE']._serialized_start=3019
+  _globals['_TRANSCRIPTIONSERVICE']._serialized_end=3279
+  _globals['_DOCUMENTSERVICE']._serialized_start=3281
+  _globals['_DOCUMENTSERVICE']._serialized_end=3406
+  _globals['_EXTRACTIONSERVICE']._serialized_start=3408
+  _globals['_EXTRACTIONSERVICE']._serialized_end=3535
+  _globals['_ENGINEDIAGNOSTICSSERVICE']._serialized_start=3537
+  _globals['_ENGINEDIAGNOSTICSSERVICE']._serialized_end=3662
 # @@protoc_insertion_point(module_scope)
