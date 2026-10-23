@@ -105,6 +105,22 @@ Cada llamada pasa por un interceptor que:
 
 `GET /health` sigue existiendo solo porque Render lo usa para saber si el contenedor está vivo.
 
+## Acta en PDF (bloque IA-5)
+
+`DocumentService.RenderMinutePdf` hace del motor el **procesador de documentos** del acta final
+(contratos v0.4.0, ADR 0004 de actaflow-contracts):
+
+- El navegador sella el contenido final (`actaflow.minutes.v1.FinalContent`: título y HTML) para
+  la clave del motor, igual que el audio. AAD: `actaflow/v1|minute-final|<caso>|<acta>`.
+- El motor lo abre en memoria y genera el PDF con **fpdf2** (puro Python, sin tocar el disco):
+  tamaño carta, encabezado con el título y pie con el número de página.
+- Se vuelve a filtrar el HTML: solo `h2`, `h3`, `p`, `br` y `strong` (un dato que falta, `mark`,
+  sale entre corchetes). Las fuentes base del PDF son Latin-1: el español se ve completo y la
+  puntuación tipográfica se cambia por su equivalente.
+- Devuelve el PDF cifrado con la misma clave de contenido (AAD `minute-pdf`) y su **SHA-256**:
+  legal-case firma ese hash (sello CMS) sin ver el documento.
+- Tope de 200 páginas, para cuidar la memoria de Render Free.
+
 ## Desarrollo local (PowerShell)
 
 ```powershell
