@@ -177,6 +177,91 @@ class TranscriptionService:
             _registered_method=True)
 
 
+class DocumentServiceStub:
+    """PDF rendering of final minutes, as a sealed processor (the "document worker" of
+    actaflow.minutes.v1). The engine opens the final content in memory, renders the PDF and returns
+    it encrypted with the same content key (AAD purpose "minute-pdf", resource = minute id), plus
+    its SHA-256 so legal-case can seal it without seeing it.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.RenderMinutePdf = channel.unary_unary(
+                '/actaflow.engine.v1.DocumentService/RenderMinutePdf',
+                request_serializer=actaflow_dot_engine_dot_v1_dot_engine__pb2.RenderMinutePdfRequest.SerializeToString,
+                response_deserializer=actaflow_dot_engine_dot_v1_dot_engine__pb2.RenderMinutePdfResponse.FromString,
+                _registered_method=True)
+
+
+class DocumentServiceServicer:
+    """PDF rendering of final minutes, as a sealed processor (the "document worker" of
+    actaflow.minutes.v1). The engine opens the final content in memory, renders the PDF and returns
+    it encrypted with the same content key (AAD purpose "minute-pdf", resource = minute id), plus
+    its SHA-256 so legal-case can seal it without seeing it.
+    """
+
+    def RenderMinutePdf(self, request, context):
+        """Renders one final minute.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_DocumentServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'RenderMinutePdf': grpc.unary_unary_rpc_method_handler(
+                    servicer.RenderMinutePdf,
+                    request_deserializer=actaflow_dot_engine_dot_v1_dot_engine__pb2.RenderMinutePdfRequest.FromString,
+                    response_serializer=actaflow_dot_engine_dot_v1_dot_engine__pb2.RenderMinutePdfResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'actaflow.engine.v1.DocumentService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('actaflow.engine.v1.DocumentService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class DocumentService:
+    """PDF rendering of final minutes, as a sealed processor (the "document worker" of
+    actaflow.minutes.v1). The engine opens the final content in memory, renders the PDF and returns
+    it encrypted with the same content key (AAD purpose "minute-pdf", resource = minute id), plus
+    its SHA-256 so legal-case can seal it without seeing it.
+    """
+
+    @staticmethod
+    def RenderMinutePdf(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/actaflow.engine.v1.DocumentService/RenderMinutePdf',
+            actaflow_dot_engine_dot_v1_dot_engine__pb2.RenderMinutePdfRequest.SerializeToString,
+            actaflow_dot_engine_dot_v1_dot_engine__pb2.RenderMinutePdfResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
 class ExtractionServiceStub:
     """Legal entity extraction from a transcript.
     """
