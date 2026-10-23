@@ -111,6 +111,26 @@ class StreamTranscriptionResponse(_message.Message):
     final: bool
     def __init__(self, partial: _Optional[_Union[_crypto_pb2.EncryptedBlob, _Mapping]] = ..., final: _Optional[bool] = ...) -> None: ...
 
+class RenderMinutePdfRequest(_message.Message):
+    __slots__ = ("case_id", "minute_id", "final_content")
+    CASE_ID_FIELD_NUMBER: _ClassVar[int]
+    MINUTE_ID_FIELD_NUMBER: _ClassVar[int]
+    FINAL_CONTENT_FIELD_NUMBER: _ClassVar[int]
+    case_id: str
+    minute_id: str
+    final_content: _crypto_pb2.SealedEnvelope
+    def __init__(self, case_id: _Optional[str] = ..., minute_id: _Optional[str] = ..., final_content: _Optional[_Union[_crypto_pb2.SealedEnvelope, _Mapping]] = ...) -> None: ...
+
+class RenderMinutePdfResponse(_message.Message):
+    __slots__ = ("pdf", "sha256_hex", "page_count")
+    PDF_FIELD_NUMBER: _ClassVar[int]
+    SHA256_HEX_FIELD_NUMBER: _ClassVar[int]
+    PAGE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    pdf: _crypto_pb2.EncryptedBlob
+    sha256_hex: str
+    page_count: int
+    def __init__(self, pdf: _Optional[_Union[_crypto_pb2.EncryptedBlob, _Mapping]] = ..., sha256_hex: _Optional[str] = ..., page_count: _Optional[int] = ...) -> None: ...
+
 class ExtractionInput(_message.Message):
     __slots__ = ("text", "reference_date", "participants")
     TEXT_FIELD_NUMBER: _ClassVar[int]
