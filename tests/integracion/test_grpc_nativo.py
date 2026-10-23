@@ -131,3 +131,4 @@ def test_la_reflexion_describe_los_servicios_publicados(canal):
     nombres = {s.name for s in respuesta.list_services_response.service}
     assert "actaflow.system.v1.ServiceStatusService" in nombres
     assert "actaflow.engine.v1.EngineDiagnosticsService" in nombres
+    assert "actaflow.engine.v1.DocumentService" in nombres
