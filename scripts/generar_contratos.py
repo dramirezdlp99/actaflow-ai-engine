@@ -32,6 +32,7 @@ MENSAJES = [
     "actaflow/common/v1/pagination.proto",
     "actaflow/legal/v1/transcript.proto",
     "actaflow/legal/v1/entities.proto",
+    "actaflow/minutes/v1/minute.proto",
 ]
 # Mensajes y servicios gRPC (el motor implementa estos servicios).
 SERVICIOS = [
