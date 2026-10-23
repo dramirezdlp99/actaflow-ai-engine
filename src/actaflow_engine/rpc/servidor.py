@@ -12,6 +12,7 @@ from actaflow_engine.config import Settings
 from actaflow_engine.diagnostico.benchmark import Ejecutor
 from actaflow_engine.rpc.interceptor import InterceptorSeguridad
 from actaflow_engine.rpc.servicios.diagnostico import ServicioDiagnostico
+from actaflow_engine.rpc.servicios.documentos import ServicioDocumentos
 from actaflow_engine.rpc.servicios.estado import ServicioEstado
 from actaflow_engine.rpc.servicios.extraccion import ServicioClaves, ServicioExtraccion
 from actaflow_engine.rpc.servicios.transcripcion import ServicioTranscripcion
@@ -24,6 +25,7 @@ SERVICIOS_PUBLICADOS = (
     engine_pb2.DESCRIPTOR.services_by_name["EngineDiagnosticsService"].full_name,
     engine_pb2.DESCRIPTOR.services_by_name["ExtractionService"].full_name,
     engine_pb2.DESCRIPTOR.services_by_name["TranscriptionService"].full_name,
+    engine_pb2.DESCRIPTOR.services_by_name["DocumentService"].full_name,
     crypto_pb2.DESCRIPTOR.services_by_name["ProcessorKeyService"].full_name,
 )
 
@@ -66,6 +68,7 @@ def crear_servidor(
         ),
         servidor,
     )
+    engine_pb2_grpc.add_DocumentServiceServicer_to_server(ServicioDocumentos(procesador), servidor)
     crypto_pb2_grpc.add_ProcessorKeyServiceServicer_to_server(ServicioClaves(procesador), servidor)
     reflection.enable_server_reflection((*SERVICIOS_PUBLICADOS, reflection.SERVICE_NAME), servidor)
     puerto = servidor.add_insecure_port(settings.grpc_bind)
